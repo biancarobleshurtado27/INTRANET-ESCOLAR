@@ -37,6 +37,44 @@
     const elApp = document.getElementById('vista-app');
     const contenido = document.getElementById('contenido');
 
+    const FORMAS_DINAMICAS = [
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M4 5h8v14H4a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2z"/><path d="M20 5h-8v14h8a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2z"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3l4 4L8 20l-5 1 1-5L17 3z"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3zM7 15.91V13.1L12 15.5l5-2.4v2.81L12 18.3l-5-2.39z"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="3" y="8" width="18" height="8" rx="2"/><path d="M6 8v3M10 8v5M14 8v3M18 8v5"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.6-5.2 4.6 1.5 6.8L12 17l-6.1 3.3 1.5-6.8L2.2 8.9l6.9-.6L12 2z"/></svg>',
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 2h6v4H9z"/></svg>'
+    ];
+
+    function crearFondoDinamico(contenedor, cantidad) {
+        if (!contenedor) return;
+        for (let i = 0; i < cantidad; i++) {
+            const figura = document.createElement('span');
+            figura.className = 'fondo-dinamico__forma';
+            figura.setAttribute('aria-hidden', 'true');
+            figura.innerHTML = FORMAS_DINAMICAS[i % FORMAS_DINAMICAS.length];
+            figura.style.left = `${Math.floor(Math.random() * 96)}%`;
+            figura.style.top = `${Math.floor(Math.random() * 92)}%`;
+            figura.style.fontSize = `${24 + Math.floor(Math.random() * 44)}px`;
+            figura.style.opacity = String(0.08 + Math.random() * 0.16);
+            figura.style.animationDuration = `${14 + Math.random() * 14}s`;
+            figura.style.animationDelay = `${-Math.random() * 20}s`;
+            contenedor.appendChild(figura);
+        }
+    }
+
+    function actualizarCabecera() {
+        const ahora = new Date();
+        const hora = ahora.getHours();
+        const saludo = hora < 12 ? 'Buenos días' : (hora < 19 ? 'Buenas tardes' : 'Buenas noches');
+        document.getElementById('cabecera-saludo').textContent = saludo;
+        document.getElementById('cabecera-fecha').textContent = ahora.toLocaleDateString('es-AR', {
+            weekday: 'long',
+            day: 'numeric',
+            month: 'long'
+        });
+    }
+
     let temporizadorEstado = null;
 
     function notificar(mensaje, esError = false) {
@@ -140,6 +178,7 @@
         elLogin.hidden = true;
         elApp.hidden = false;
         document.getElementById('cabecera-rol').textContent = Vistas.ROLES[persona.rol];
+        actualizarCabecera();
         cambiarVista('tablon');
     }
 
@@ -508,6 +547,9 @@
         Store.cargar();
         construirLoginAyuda();
 
+        crearFondoDinamico(document.querySelector('#vista-login .fondo-dinamico'), 10);
+        crearFondoDinamico(document.querySelector('#vista-app .fondo-dinamico'), 12);
+
         const persona = Auth.personaActual();
         if (persona) {
             ingresar(persona);
@@ -517,4 +559,5 @@
     }
 
     document.addEventListener('DOMContentLoaded', iniciar);
+    setInterval(actualizarCabecera, 60000);
 })();

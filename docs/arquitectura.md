@@ -140,6 +140,10 @@ Cada función devuelve un string HTML (con valores escapados) para `#contenido`:
 - Maneja eventos con **delegación** sobre `#contenido` (clicks con `data-accion`,
   envíos de formularios `data-form` y cambios para filtros/selecciones).
 - Enrutado por hash (`#tablon`, `#personas`, ...) para volver atrás y compartir vistas.
+- `crearFondoDinamico(contenedor, cantidad)` genera las formas flotantes del fondo
+  (libros, lápices, birretes, reglas, estrellas) en posiciones y tamaños aleatorios;
+  son decorativas (`aria-hidden`, `pointer-events: none`).
+- `actualizarCabecera()` muestra saludo según la hora y la fecha en español.
 - `notificar()` anuncia resultados con `role="status"` (`aria-live="polite"`).
 
 ---
@@ -160,8 +164,11 @@ Cada función devuelve un string HTML (con valores escapados) para `#contenido`:
 - `css/estilos.css` define variables de diseño (colores, sombras, radios), layout con
   **Grid** (cabecera) y **Flexbox** (menú, formularios, acciones), y breakpoints
   `@media` a 860 px y 480 px.
-- Paleta con contraste AA (azul `#1a5276` sobre blanco, texto `#1c2833` sobre `#f4f6f7`).
+- Paleta con contraste AA (azul `#1a5276` sobre blanco, texto `#1c2833` sobre `#f4f6f7`,
+  ámbar `#f39c12` como acento escolar).
+- Fondo dinámico: gradiente animado (`fondoGradiente`) y formas flotantes (`flotar`).
 - Foco visible con `:focus-visible` y estados de error/éxito con clases dedicadas.
+- `prefers-reduced-motion` desactiva todas las animaciones para accesibilidad.
 
 ---
 

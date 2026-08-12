@@ -9,10 +9,18 @@
 </head>
 <body>
 
+    <!-- ======== Login ======== -->
     <div id="vista-login" class="vista-login" hidden>
+        <div class="fondo-dinamico fondo-dinamico--login" aria-hidden="true"></div>
+
         <form id="form-login" class="tarjeta tarjeta--login" novalidate>
+            <div class="emblema emblema--login" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3zM7 15.91V13.1L12 15.5l5-2.4v2.81L12 18.3l-5-2.39z"/>
+                </svg>
+            </div>
             <h1 class="titulo-login">Intranet Escolar</h1>
-            <p class="subtitulo">Acceso al sistema</p>
+            <p class="subtitulo">Escuela N.º 12 · Comunidad educativa</p>
 
             <div class="campo">
                 <label for="login-usuario">Usuario</label>
@@ -35,21 +43,35 @@
         </form>
     </div>
 
+    <!-- ======== Aplicación ======== -->
     <div id="vista-app" hidden>
+        <div class="fondo-dinamico" aria-hidden="true"></div>
+
         <header class="cabecera">
-            <div class="cabecera__marca">
-                <p class="cabecera__titulo">Intranet Escolar</p>
-                <p id="cabecera-rol" class="cabecera__rol"></p>
+            <div class="cabecera__superior">
+                <div class="cabecera__marca">
+                    <svg class="cabecera__emblema" viewBox="0 0 24 24" aria-hidden="true">
+                        <path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3zM7 15.91V13.1L12 15.5l5-2.4v2.81L12 18.3l-5-2.39z"/>
+                    </svg>
+                    <div class="cabecera__texto">
+                        <p class="cabecera__titulo">Intranet Escolar</p>
+                        <p id="cabecera-rol" class="cabecera__rol"></p>
+                    </div>
+                </div>
+
+                <div class="cabecera__usuario">
+                    <p class="cabecera__contexto">
+                        <span id="cabecera-saludo" class="cabecera__saludo"></span>
+                        <span id="cabecera-fecha" class="cabecera__fecha"></span>
+                    </p>
+                    <span id="cabecera-nombre" class="cabecera__nombre"></span>
+                    <button id="boton-salir" class="boton boton--secundario boton--en-cabecera" type="button">Salir</button>
+                </div>
             </div>
 
             <nav class="navegacion" aria-label="Navegación principal">
                 <ul id="menu" class="menu"></ul>
             </nav>
-
-            <div class="cabecera__usuario">
-                <span id="cabecera-nombre" class="cabecera__nombre"></span>
-                <button id="boton-salir" class="boton boton--secundario" type="button">Salir</button>
-            </div>
         </header>
 
         <main id="contenido" class="contenido"></main>
@@ -57,7 +79,7 @@
         <p id="estado-sistema" class="estado-sistema" role="status" aria-live="polite" hidden></p>
 
         <footer class="pie">
-            <p>Intranet Escolar · Proyecto de demostración con datos ficticios</p>
+            <p>Escuela N.º 12 · Intranet Escolar — proyecto de demostración con datos ficticios</p>
         </footer>
     </div>
 

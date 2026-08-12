@@ -3,6 +3,22 @@
 Registro estructurado de versiones y cambios del proyecto **Intranet Escolar**.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [0.2.0] — 2026-08-12
+
+### Agregado
+
+- **Rediseño escolar:** cabecera con gradiente, emblema (birrete) y franja ámbar.
+- **Fondo dinámico:** gradiente animado en login y app, con formas flotantes
+  (libros, lápices, birretes, reglas, estrellas) generadas por JS en posiciones
+  aleatorias y animadas con CSS.
+- **Cabecera dinámica:** saludo según la hora del día ("Buenos días/tardes/noches"),
+  fecha actual en español (actualizada cada minuto) y nombre del usuario.
+- **Microinteracciones:** botones pill con gradiente, tarjetas con elevación al
+  pasar el cursor, animación de entrada de vistas y foco con anillo ámbar.
+- **Accesibilidad:** las formas decorativas son `aria-hidden`, el fondo no interfiere
+  con la interacción (`pointer-events: none`) y todas las animaciones se desactivan
+  con `prefers-reduced-motion`.
+
 ## [0.1.0] — 2026-08-12
 
 ### Agregado

@@ -114,6 +114,7 @@ Estas reglas son de **cumplimiento obligatorio** para todo trabajo en este repos
 
 - **2026-08-12 — Proyecto inicializado.** Repo con `index.html` base y `README.md`. Ramas `main` y `bianca`.
 - **2026-08-12 — Aplicación construida (v0.1.0).** SPA con roles, persistencia en `localStorage` y documentación completa. Ver `CHANGELOG.md`.
+- **2026-08-12 — Rediseño escolar y fondo dinámico (v0.2.0).** Gradiente animado, formas flotantes SVG generadas por JS (`crearFondoDinamico` en `app.js`), cabecera con emblema, saludo y fecha dinámicos. Respeto de `prefers-reduced-motion`. Ver `CHANGELOG.md`.
 - **Persistencia con `localStorage`:** se eligió sobre JSON vía `fetch` porque permite escritura (alta/baja/edición) sin servidor, cumpliendo el requisito de simular backend.
 - **Un solo punto de acceso a datos:** módulo `store.js` como única puerta a `localStorage`. Ver regla 6.
 - **Sin módulos ES (`import`/`export`):** el proyecto se abre por `file://` y Chrome bloquea los módulos ES en ese contexto; se usan scripts cargados en orden que exponen `window.IntranetEscolar`.
@@ -123,9 +124,9 @@ Estas reglas son de **cumplimiento obligatorio** para todo trabajo en este repos
 
 ### 6.2 Estado actual del proyecto
 
-- `index.html`: login + shell de la app (`lang="es"`, cabecera, menú, `main`, pie).
-- `css/estilos.css`: variables, Grid/Flexbox, breakpoints 860 px y 480 px, `:focus-visible`.
-- `js/utilidades.js`, `js/store.js`, `js/auth.js`, `js/vistas.js`, `js/app.js`: todos implementados y con `node --check` OK.
+- `index.html`: login + shell de la app (`lang="es"`, cabecera con emblema y saludo, menú, `main`, pie).
+- `css/estilos.css`: variables, Grid/Flexbox, gradientes y animaciones (flotar, fondoGradiente, aparecer), breakpoints 860 px y 480 px, `:focus-visible`, `prefers-reduced-motion`.
+- `js/utilidades.js`, `js/store.js`, `js/auth.js`, `js/vistas.js`, `js/app.js`: todos implementados y con `node --check` OK (incluye `crearFondoDinamico` y `actualizarCabecera`).
 - `docs/arquitectura.md` y `docs/requerimientos.md`: creados.
 - `README.md`, `CONTRIBUTING.md`, `CHANGELOG.md`, `CLAUDE.md`: creados (README normalizado a UTF-8).
 - Pendiente: prueba manual en navegador de todos los flujos y validación del checklist.
