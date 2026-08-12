@@ -1,11 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="description" content="Intranet escolar: consulta de calificaciones, horarios, comunicados y tareas para administración, docentes, estudiantes y familias.">
+    <title>Intranet Escolar</title>
+    <link rel="stylesheet" href="css/estilos.css">
 </head>
 <body>
-    
+
+    <div id="vista-login" class="vista-login" hidden>
+        <form id="form-login" class="tarjeta tarjeta--login" novalidate>
+            <h1 class="titulo-login">Intranet Escolar</h1>
+            <p class="subtitulo">Acceso al sistema</p>
+
+            <div class="campo">
+                <label for="login-usuario">Usuario</label>
+                <input type="text" id="login-usuario" name="usuario" autocomplete="username" required>
+            </div>
+
+            <div class="campo">
+                <label for="login-clave">Contraseña</label>
+                <input type="password" id="login-clave" name="clave" autocomplete="current-password" required>
+            </div>
+
+            <p id="login-error" class="alerta alerta--error" role="alert" hidden></p>
+
+            <button type="submit" class="boton boton--primario boton--amplio">Ingresar</button>
+
+            <details class="ayuda">
+                <summary>Ver cuentas de demostración</summary>
+                <ul id="lista-ayuda" class="lista-ayuda"></ul>
+            </details>
+        </form>
+    </div>
+
+    <div id="vista-app" hidden>
+        <header class="cabecera">
+            <div class="cabecera__marca">
+                <p class="cabecera__titulo">Intranet Escolar</p>
+                <p id="cabecera-rol" class="cabecera__rol"></p>
+            </div>
+
+            <nav class="navegacion" aria-label="Navegación principal">
+                <ul id="menu" class="menu"></ul>
+            </nav>
+
+            <div class="cabecera__usuario">
+                <span id="cabecera-nombre" class="cabecera__nombre"></span>
+                <button id="boton-salir" class="boton boton--secundario" type="button">Salir</button>
+            </div>
+        </header>
+
+        <main id="contenido" class="contenido"></main>
+
+        <p id="estado-sistema" class="estado-sistema" role="status" aria-live="polite" hidden></p>
+
+        <footer class="pie">
+            <p>Intranet Escolar · Proyecto de demostración con datos ficticios</p>
+        </footer>
+    </div>
+
+    <script src="js/utilidades.js"></script>
+    <script src="js/store.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/vistas.js"></script>
+    <script src="js/app.js"></script>
 </body>
 </html>
