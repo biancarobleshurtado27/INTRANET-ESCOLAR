@@ -7,11 +7,6 @@
     const Vistas = window.IntranetEscolar.Vistas;
 
     const MENU = {
-        administracion: [
-            { vista: 'tablon', etiqueta: 'Tablón' },
-            { vista: 'cuentas', etiqueta: 'Cuentas' },
-            { vista: 'comunicados', etiqueta: 'Comunicados' }
-        ],
         docente: [
             { vista: 'tablon', etiqueta: 'Tablón' },
             { vista: 'calificaciones', etiqueta: 'Calificaciones' },
@@ -29,7 +24,6 @@
     const estado = {
         vistaActual: 'tablon',
         filtroTablon: 'todos',
-        ordenCuentas: 'nombre',
         periodoCalificaciones: 2,
         fechaAsistencia: null
     };
@@ -115,19 +109,6 @@
             </li>`).join('');
     }
 
-    function alternarCamposCondicionales(rol) {
-        document.querySelectorAll('[data-condicion]').forEach((campo) => {
-            const condiciones = campo.dataset.condicion.split(' ');
-            campo.hidden = !condiciones.includes(rol);
-        });
-        if (rol === 'docente' || rol === 'estudiante') {
-            const etiqueta = document.getElementById('persona-curso-label');
-            if (etiqueta) {
-                etiqueta.textContent = rol === 'docente' ? 'Curso a cargo' : 'Curso';
-            }
-        }
-    }
-
     function cambiarVista(nombre) {
         const persona = Auth.personaActual();
         if (!persona) {
@@ -146,8 +127,6 @@
 
         const renderizador = {
             tablon: () => Vistas.vistaTablon(estado.filtroTablon),
-            cuentas: () => Vistas.vistaCuentas(estado.ordenCuentas),
-            comunicados: Vistas.vistaComunicados,
             calificaciones: () => Vistas.vistaCalificaciones(estado.periodoCalificaciones),
             asistencia: () => Vistas.vistaAsistencia(estado.fechaAsistencia),
             aulas: Vistas.vistaAulas,
@@ -170,183 +149,6 @@
         document.getElementById('cabecera-rol').textContent = Vistas.ROLES[persona.rol];
         actualizarCabecera();
         cambiarVista('tablon');
-    }
-
-    /* ------------------------------------------------------------
-       Acciones: personas (admin)
-       ------------------------------------------------------------ */
-
-    function editarPersona(id) {
-        const persona = Store.buscar('personas', id);
-        if (!persona) return;
-
-        const form = document.querySelector('[data-form="persona"]');
-        form.querySelector('[name="id"]').value = persona.id;
-        form.querySelector('[name="nombre"]').value = persona.nombre;
-        form.querySelector('[name="rol"]').value = persona.rol;
-        form.querySelector('[name="usuario"]').value = persona.usuario;
-        form.querySelector('[name="clave"]').value = '';
-        form.querySelector('[name="clave"]').required = false;
-        form.querySelector('[name="cursoId"]').value = persona.cursoId || '';
-        form.querySelector('[name="materiaId"]').value = persona.materiaId || '';
-        form.querySelector('[data-accion="persona-cancelar"]').hidden = false;
-
-        const titulo = document.getElementById('titulo-form-persona');
-        if (titulo) titulo.textContent = 'Editar cuenta';
-
-        alternarCamposCondicionales(persona.rol);
-        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        form.querySelector('[name="nombre"]').focus();
-    }
-
-    function guardarPersona(form) {
-        const datosFormulario = new FormData(form);
-        const id = String(datosFormulario.get('id') || '');
-        const nombre = String(datosFormulario.get('nombre') || '').trim();
-        const rol = datosFormulario.get('rol');
-        const usuario = String(datosFormulario.get('usuario') || '').trim();
-        const clave = String(datosFormulario.get('clave') || '');
-        const esEdicion = Boolean(id);
-
-        if (!nombre || !usuario) {
-            mostrarErrorForm(form, 'El nombre y el usuario son obligatorios.');
-            return;
-        }
-        if (!esEdicion && !clave) {
-            mostrarErrorForm(form, 'La contraseña es obligatoria para nuevas cuentas.');
-            return;
-        }
-        if (clave && clave.length < 4) {
-            mostrarErrorForm(form, 'La contraseña debe tener al menos 4 caracteres.');
-            return;
-        }
-        const duplicado = Store.filtrar('personas',
-            (p) => U.normalizarTexto(p.usuario) === U.normalizarTexto(usuario) && p.id !== id)[0];
-        if (duplicado) {
-            mostrarErrorForm(form, 'Ya existe una cuenta registrada con ese usuario.');
-            return;
-        }
-
-        const datos = { nombre, rol, usuario };
-        if (clave) {
-            datos.clave = U.codificarClave(clave);
-        }
-        if (rol === 'estudiante') {
-            datos.cursoId = String(datosFormulario.get('cursoId') || '');
-            datos.materiaId = null;
-        } else if (rol === 'docente') {
-            datos.cursoId = String(datosFormulario.get('cursoId') || '');
-            datos.materiaId = String(datosFormulario.get('materiaId') || '');
-        } else {
-            datos.cursoId = null;
-            datos.materiaId = null;
-        }
-
-        let resultado;
-        if (esEdicion) {
-            resultado = Store.actualizar('personas', id, datos);
-        } else {
-            resultado = Boolean(Store.insertar('personas', { ...datos, creadoEn: U.hoyISO() }));
-        }
-
-        if (!resultado) {
-            mostrarErrorForm(form, 'No se pudieron guardar los datos (almacenamiento lleno).');
-            return;
-        }
-
-        notificar(esEdicion ? 'Cuenta actualizada.' : 'Cuenta registrada.');
-        cambiarVista('cuentas');
-    }
-
-    function eliminarPersona(id) {
-        const persona = Store.buscar('personas', id);
-        if (!persona) return;
-        if (!window.confirm(`¿Eliminar a ${persona.nombre}? Esta acción no se puede deshacer.`)) return;
-
-        const eliminada = Store.eliminar('personas', id);
-        notificar(eliminada ? 'Cuenta eliminada.' : 'No se pudo eliminar (almacenamiento lleno).', !eliminada);
-        cambiarVista('cuentas');
-    }
-
-    /* ------------------------------------------------------------
-       Acciones: comunicados (admin)
-       ------------------------------------------------------------ */
-
-    function editarComunicado(id) {
-        const comunicado = Store.buscar('comunicados', id);
-        if (!comunicado) return;
-
-        const form = document.querySelector('[data-form="comunicado"]');
-        form.querySelector('[name="id"]').value = comunicado.id;
-        form.querySelector('[name="titulo"]').value = comunicado.titulo;
-        form.querySelector('[name="contenido"]').value = comunicado.contenido;
-        form.querySelector('[name="destinatario"]').value = comunicado.destinatario;
-        form.querySelector('[data-accion="comunicado-cancelar"]').hidden = false;
-
-        const titulo = document.getElementById('titulo-form-comunicado');
-        if (titulo) titulo.textContent = 'Editar comunicado';
-
-        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        form.querySelector('[name="titulo"]').focus();
-    }
-
-    function guardarComunicado(form) {
-        const datosFormulario = new FormData(form);
-        const id = String(datosFormulario.get('id') || '');
-        const titulo = String(datosFormulario.get('titulo') || '').trim();
-        const contenido = String(datosFormulario.get('contenido') || '').trim();
-        const destinatario = datosFormulario.get('destinatario');
-
-        if (!titulo || !contenido) {
-            mostrarErrorForm(form, 'El título y el contenido son obligatorios.');
-            return;
-        }
-
-        const datos = { titulo, contenido, destinatario };
-        let resultado;
-        if (id) {
-            resultado = Store.actualizar('comunicados', id, datos);
-        } else {
-            resultado = Boolean(Store.insertar('comunicados', { ...datos, fecha: U.hoyISO() }));
-        }
-
-        if (!resultado) {
-            mostrarErrorForm(form, 'No se pudo guardar el comunicado (almacenamiento lleno).');
-            return;
-        }
-
-        notificar(id ? 'Comunicado actualizado.' : 'Comunicado publicado.');
-        cambiarVista('comunicados');
-    }
-
-    function eliminarComunicado(id) {
-        const comunicado = Store.buscar('comunicados', id);
-        if (!comunicado) return;
-        if (!window.confirm(`¿Eliminar el comunicado "${comunicado.titulo}"?`)) return;
-
-        const eliminado = Store.eliminar('comunicados', id);
-        notificar(eliminado ? 'Comunicado eliminado.' : 'No se pudo eliminar (almacenamiento lleno).', !eliminado);
-        cambiarVista('comunicados');
-    }
-
-    function cancelarEdicion(tipo) {
-        const form = document.querySelector(`[data-form="${tipo}"]`);
-        if (!form) return;
-        form.reset();
-        form.querySelector('[name="id"]').value = '';
-
-        const cancelar = form.querySelector('[data-accion$="cancelar"]');
-        if (cancelar) cancelar.hidden = true;
-
-        if (tipo === 'persona') {
-            form.querySelector('[name="clave"]').required = true;
-            alternarCamposCondicionales('administracion');
-            const titulo = document.getElementById('titulo-form-persona');
-            if (titulo) titulo.textContent = 'Nueva cuenta';
-        } else {
-            const titulo = document.getElementById('titulo-form-comunicado');
-            if (titulo) titulo.textContent = 'Nuevo comunicado';
-        }
     }
 
     /* ------------------------------------------------------------
@@ -437,9 +239,16 @@
     document.getElementById('form-login').addEventListener('submit', (evento) => {
         evento.preventDefault();
         const error = document.getElementById('login-error');
+        const rol = document.getElementById('login-rol').value;
+        if (!rol) {
+            error.textContent = 'Seleccione el tipo de acceso.';
+            error.hidden = false;
+            return;
+        }
         const resultado = Auth.iniciarSesion(
             document.getElementById('login-usuario').value,
-            document.getElementById('login-clave').value
+            document.getElementById('login-clave').value,
+            rol
         );
 
         if (!resultado.ok) {
@@ -449,6 +258,21 @@
         }
         error.hidden = true;
         ingresar(resultado.persona);
+    });
+
+    document.querySelector('.selector-rol').addEventListener('click', (evento) => {
+        const boton = evento.target.closest('[data-rol-login]');
+        if (!boton) return;
+        const rol = boton.dataset.rolLogin;
+        document.getElementById('login-rol').value = rol;
+        document.querySelectorAll('[data-rol-login]').forEach((opcion) => {
+            opcion.classList.toggle('selector-rol__opcion--activa', opcion === boton);
+        });
+        document.getElementById('login-titulo-rol').textContent = rol === 'docente'
+            ? 'Acceso para docentes y personal'
+            : 'Acceso para estudiantes y familias';
+        document.getElementById('login-error').hidden = true;
+        document.getElementById('login-usuario').focus();
     });
 
     document.getElementById('boton-salir').addEventListener('click', () => {
@@ -466,24 +290,6 @@
                 estado.filtroTablon = boton.dataset.filtro;
                 cambiarVista('tablon');
                 break;
-            case 'persona-editar':
-                editarPersona(boton.dataset.id);
-                break;
-            case 'persona-eliminar':
-                eliminarPersona(boton.dataset.id);
-                break;
-            case 'persona-cancelar':
-                cancelarEdicion('persona');
-                break;
-            case 'comunicado-editar':
-                editarComunicado(boton.dataset.id);
-                break;
-            case 'comunicado-eliminar':
-                eliminarComunicado(boton.dataset.id);
-                break;
-            case 'comunicado-cancelar':
-                cancelarEdicion('comunicado');
-                break;
         }
     });
 
@@ -493,12 +299,6 @@
         evento.preventDefault();
 
         switch (form.dataset.form) {
-            case 'persona':
-                guardarPersona(form);
-                break;
-            case 'comunicado':
-                guardarComunicado(form);
-                break;
             case 'calificaciones':
                 guardarCalificaciones(form);
                 break;
@@ -509,15 +309,6 @@
     });
 
     contenido.addEventListener('change', (evento) => {
-        if (evento.target.matches('#persona-rol')) {
-            alternarCamposCondicionales(evento.target.value);
-            return;
-        }
-        if (evento.target.matches('#cuentas-orden')) {
-            estado.ordenCuentas = evento.target.value;
-            cambiarVista('cuentas');
-            return;
-        }
         if (evento.target.matches('#calificaciones-periodo')) {
             estado.periodoCalificaciones = Number(evento.target.value);
             cambiarVista('calificaciones');

@@ -14,11 +14,11 @@
     }
 
     const Auth = {
-        iniciarSesion(usuario, clave) {
+        iniciarSesion(usuario, clave, rol) {
             const persona = Store.filtrar('personas',
                 (p) => U.normalizarTexto(p.usuario) === U.normalizarTexto(usuario))[0];
 
-            if (!persona || !U.compararClave(clave, persona.clave)) {
+            if (!persona || persona.rol !== rol || !U.compararClave(clave, persona.clave)) {
                 return { ok: false, mensaje: 'Usuario o contraseña incorrectos.' };
             }
 

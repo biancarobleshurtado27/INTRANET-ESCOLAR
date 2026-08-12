@@ -6,7 +6,6 @@
     const Auth = window.IntranetEscolar.Auth;
 
     const ROLES = {
-        administracion: 'Administración',
         docente: 'Docente',
         estudiante: 'Estudiante / Familia'
     };
@@ -93,171 +92,6 @@
             <h2>Tablón de comunicados</h2>
             <div class="filtros" role="group" aria-label="Filtrar comunicados por destinatario">${botonesFiltro}</div>
             ${lista}`;
-    }
-
-    const ORDEN_ROLES = { administracion: 0, docente: 1, estudiante: 2 };
-
-    function vistaCuentas(orden = 'nombre') {
-        const personas = Store.obtener('personas').slice();
-
-        const claveCurso = (persona) => {
-            if (persona.cursoId) return cursoNombre(persona.cursoId);
-            if (persona.materiaId) return materiaNombre(persona.materiaId);
-            return '—';
-        };
-
-        personas.sort((a, b) => {
-            if (orden === 'rol') {
-                const porRol = (ORDEN_ROLES[a.rol] ?? 99) - (ORDEN_ROLES[b.rol] ?? 99);
-                return porRol || a.nombre.localeCompare(b.nombre, 'es');
-            }
-            if (orden === 'curso') {
-                const porCurso = claveCurso(a).localeCompare(claveCurso(b), 'es');
-                return porCurso || a.nombre.localeCompare(b.nombre, 'es');
-            }
-            return a.nombre.localeCompare(b.nombre, 'es');
-        });
-
-        const opcionesCurso = Store.obtener('cursos')
-            .map((curso) => `<option value="${curso.id}">${U.escaparHTML(curso.nombre)}</option>`)
-            .join('');
-
-        const opcionesMateria = Store.obtener('materias')
-            .map((materia) => `<option value="${materia.id}">${U.escaparHTML(materia.nombre)}</option>`)
-            .join('');
-
-        const filas = personas.map((persona) => `
-            <tr>
-                <td>${U.escaparHTML(persona.nombre)}</td>
-                <td><span class="insignia">${ROLES[persona.rol]}</span></td>
-                <td>${U.escaparHTML(persona.usuario)}</td>
-                <td>${claveCurso(persona)}</td>
-                <td class="acciones">
-                    <button type="button" class="boton boton--pequeno" data-accion="persona-editar" data-id="${persona.id}">Editar</button>
-                    <button type="button" class="boton boton--pequeno boton--peligro" data-accion="persona-eliminar" data-id="${persona.id}">Eliminar</button>
-                </td>
-            </tr>`).join('');
-
-        return `
-            <h2>Gestión de cuentas</h2>
-            <p class="comunicado__fecha">Las cuentas creadas permiten el acceso al sistema según su rol. Las cuentas de demostración ya no se muestran en el login.</p>
-
-            <section class="tarjeta tarjeta--estrecha" aria-labelledby="titulo-form-persona">
-                <h3 id="titulo-form-persona">Nueva cuenta</h3>
-                <form data-form="persona" novalidate>
-                    <input type="hidden" name="id">
-                    <div class="campo">
-                        <label for="persona-nombre">Nombre completo</label>
-                        <input type="text" id="persona-nombre" name="nombre" required maxlength="120">
-                    </div>
-                    <div class="campo">
-                        <label for="persona-rol">Rol</label>
-                        <select id="persona-rol" name="rol" required>
-                            <option value="administracion">Administración</option>
-                            <option value="docente">Docente</option>
-                            <option value="estudiante">Estudiante</option>
-                        </select>
-                    </div>
-                    <div class="campo">
-                        <label for="persona-usuario">Usuario</label>
-                        <input type="text" id="persona-usuario" name="usuario" required maxlength="40" autocomplete="off">
-                    </div>
-                    <div class="campo">
-                        <label for="persona-clave">Contraseña</label>
-                        <input type="password" id="persona-clave" name="clave" required minlength="4" autocomplete="new-password">
-                    </div>
-                    <div class="campo" data-condicion="estudiante docente" hidden>
-                        <label for="persona-curso" id="persona-curso-label">Curso</label>
-                        <select id="persona-curso" name="cursoId">${opcionesCurso}</select>
-                    </div>
-                    <div class="campo" data-condicion="docente" hidden>
-                        <label for="persona-materia">Materia</label>
-                        <select id="persona-materia" name="materiaId">${opcionesMateria}</select>
-                    </div>
-                    <div class="form-acciones">
-                        <button type="submit" class="boton boton--primario">Guardar cuenta</button>
-                        <button type="button" class="boton" data-accion="persona-cancelar" hidden>Cancelar edición</button>
-                    </div>
-                </form>
-            </section>
-
-            <section class="tarjeta" aria-labelledby="titulo-tabla-personas">
-                <div class="tabla-cabecera">
-                    <h3 id="titulo-tabla-personas">Listado de cuentas</h3>
-                    <div class="campo campo--compacto">
-                        <label for="cuentas-orden">Ordenar por</label>
-                        <select id="cuentas-orden">
-                            <option value="nombre" ${orden === 'nombre' ? 'selected' : ''}>Nombre (A–Z)</option>
-                            <option value="rol" ${orden === 'rol' ? 'selected' : ''}>Rol</option>
-                            <option value="curso" ${orden === 'curso' ? 'selected' : ''}>Curso / Materia</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="tabla-contenedor">
-                    <table>
-                        <caption>Cuentas de acceso al sistema</caption>
-                        <thead>
-                            <tr><th>Nombre</th><th>Rol</th><th>Usuario</th><th>Curso / Materia</th><th>Acciones</th></tr>
-                        </thead>
-                        <tbody>${filas}</tbody>
-                    </table>
-                </div>
-            </section>`;
-    }
-
-    function vistaComunicados() {
-        const comunicados = Store.obtener('comunicados')
-            .slice()
-            .sort((a, b) => b.fecha.localeCompare(a.fecha));
-
-        const publicados = comunicados.length
-            ? comunicados.map((comunicado) => `
-                <article class="tarjeta comunicado">
-                    <div class="comunicado__cabecera">
-                        <h3>${U.escaparHTML(comunicado.titulo)}</h3>
-                        <span class="comunicado__fecha">${U.formatearFecha(comunicado.fecha)}</span>
-                    </div>
-                    <p>${U.escaparHTML(comunicado.contenido)}</p>
-                    <div class="form-acciones">
-                        <span class="insignia">Para: ${DESTINATARIOS[comunicado.destinatario]}</span>
-                        <button type="button" class="boton boton--pequeno" data-accion="comunicado-editar" data-id="${comunicado.id}">Editar</button>
-                        <button type="button" class="boton boton--pequeno boton--peligro" data-accion="comunicado-eliminar" data-id="${comunicado.id}">Eliminar</button>
-                    </div>
-                </article>`).join('')
-            : '<p class="vacio">Todavía no hay comunicados publicados.</p>';
-
-        return `
-            <h2>Publicar comunicados</h2>
-
-            <section class="tarjeta tarjeta--estrecha" aria-labelledby="titulo-form-comunicado">
-                <h3 id="titulo-form-comunicado">Nuevo comunicado</h3>
-                <form data-form="comunicado" novalidate>
-                    <input type="hidden" name="id">
-                    <div class="campo">
-                        <label for="comunicado-titulo">Título</label>
-                        <input type="text" id="comunicado-titulo" name="titulo" required maxlength="140">
-                    </div>
-                    <div class="campo">
-                        <label for="comunicado-contenido">Contenido</label>
-                        <textarea id="comunicado-contenido" name="contenido" required maxlength="2000"></textarea>
-                    </div>
-                    <div class="campo">
-                        <label for="comunicado-destinatario">Dirigido a</label>
-                        <select id="comunicado-destinatario" name="destinatario" required>
-                            <option value="todos">Todos</option>
-                            <option value="estudiantes">Estudiantes y familias</option>
-                            <option value="docentes">Docentes</option>
-                        </select>
-                    </div>
-                    <div class="form-acciones">
-                        <button type="submit" class="boton boton--primario">Publicar</button>
-                        <button type="button" class="boton" data-accion="comunicado-cancelar" hidden>Cancelar edición</button>
-                    </div>
-                </form>
-            </section>
-
-            <h3>Publicados</h3>
-            ${publicados}`;
     }
 
     function vistaCalificaciones(periodo = 2) {
@@ -510,8 +344,6 @@
     window.IntranetEscolar.Vistas = {
         ROLES,
         vistaTablon,
-        vistaCuentas,
-        vistaComunicados,
         vistaCalificaciones,
         vistaAsistencia,
         vistaAulas,

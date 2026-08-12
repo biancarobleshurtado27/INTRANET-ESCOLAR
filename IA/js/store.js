@@ -77,14 +77,6 @@
         const personas = [
             {
                 id: U.generarId('persona'),
-                nombre: 'Carolina Díaz',
-                rol: 'administracion',
-                usuario: 'admin',
-                clave: U.codificarClave('admin123'),
-                creadoEn: U.fechaDesdeHoy(-60)
-            },
-            {
-                id: U.generarId('persona'),
                 nombre: 'Laura Pérez',
                 rol: 'docente',
                 usuario: 'laura.perez',
@@ -236,6 +228,8 @@
             ENTIDADES.forEach((entidad) => {
                 datos[entidad] = Array.isArray(almacenado[entidad]) ? almacenado[entidad] : [];
             });
+            datos.personas = datos.personas.filter((persona) => persona.rol === 'docente' || persona.rol === 'estudiante');
+            guardar();
         } else {
             sembrarDatos();
         }

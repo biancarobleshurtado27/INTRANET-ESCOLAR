@@ -3,6 +3,14 @@
 Registro estructurado de versiones y cambios del proyecto **Intranet Escolar**.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [0.3.2] — 2026-08-12
+
+### Cambiado
+
+- El orden **por defecto** del listado de cuentas ahora es **por rol**.
+- Los formularios "Gestión de cuentas" y "Publicar comunicados" usan el mismo ancho que
+  las listas "Listado de cuentas" y "Publicados" (se quita el límite de ancho estrecho).
+
 ## [0.3.1] — 2026-08-12
 
 ### Agregado
