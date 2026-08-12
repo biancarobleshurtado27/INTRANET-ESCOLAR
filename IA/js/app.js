@@ -97,7 +97,7 @@
         Auth.cerrarSesion();
         elApp.hidden = true;
         elLogin.hidden = false;
-        document.getElementById('login-usuario').focus();
+        document.getElementById('login-docente-usuario').focus();
     }
 
     function construirMenu(persona) {
@@ -236,43 +236,24 @@
        Eventos
        ------------------------------------------------------------ */
 
-    document.getElementById('form-login').addEventListener('submit', (evento) => {
-        evento.preventDefault();
-        const error = document.getElementById('login-error');
-        const rol = document.getElementById('login-rol').value;
-        if (!rol) {
-            error.textContent = 'Seleccione el tipo de acceso.';
-            error.hidden = false;
-            return;
-        }
-        const resultado = Auth.iniciarSesion(
-            document.getElementById('login-usuario').value,
-            document.getElementById('login-clave').value,
-            rol
-        );
-
-        if (!resultado.ok) {
-            error.textContent = resultado.mensaje;
-            error.hidden = false;
-            return;
-        }
-        error.hidden = true;
-        ingresar(resultado.persona);
-    });
-
-    document.querySelector('.selector-rol').addEventListener('click', (evento) => {
-        const boton = evento.target.closest('[data-rol-login]');
-        if (!boton) return;
-        const rol = boton.dataset.rolLogin;
-        document.getElementById('login-rol').value = rol;
-        document.querySelectorAll('[data-rol-login]').forEach((opcion) => {
-            opcion.classList.toggle('selector-rol__opcion--activa', opcion === boton);
+    document.querySelectorAll('[data-form-login]').forEach((formulario) => {
+        formulario.addEventListener('submit', (evento) => {
+            evento.preventDefault();
+            const error = formulario.querySelector('.login-error');
+            const datos = new FormData(formulario);
+            const resultado = Auth.iniciarSesion(
+                String(datos.get('usuario') || ''),
+                String(datos.get('clave') || ''),
+                formulario.dataset.formLogin
+            );
+            if (!resultado.ok) {
+                error.textContent = resultado.mensaje;
+                error.hidden = false;
+                return;
+            }
+            error.hidden = true;
+            ingresar(resultado.persona);
         });
-        document.getElementById('login-titulo-rol').textContent = rol === 'docente'
-            ? 'Acceso para docentes y personal'
-            : 'Acceso para estudiantes y familias';
-        document.getElementById('login-error').hidden = true;
-        document.getElementById('login-usuario').focus();
     });
 
     document.getElementById('boton-salir').addEventListener('click', () => {
@@ -334,6 +315,11 @@
 
         crearFondoDinamico(document.querySelector('#vista-login .fondo-dinamico'), 10);
         crearFondoDinamico(document.querySelector('#vista-app .fondo-dinamico'), 12);
+
+        document.addEventListener('pointermove', (evento) => {
+            document.documentElement.style.setProperty('--cursor-x', `${(evento.clientX / window.innerWidth) * 100}%`);
+            document.documentElement.style.setProperty('--cursor-y', `${(evento.clientY / window.innerHeight) * 100}%`);
+        }, { passive: true });
 
         const persona = Auth.personaActual();
         if (persona) {

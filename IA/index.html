@@ -13,7 +13,7 @@
     <div id="vista-login" class="vista-login" hidden>
         <div class="fondo-dinamico fondo-dinamico--login" aria-hidden="true"></div>
 
-        <form id="form-login" class="tarjeta tarjeta--login" novalidate>
+        <div id="form-login" hidden>
             <div class="emblema emblema--login" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
                     <path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3zM7 15.91V13.1L12 15.5l5-2.4v2.81L12 18.3l-5-2.39z"/>
@@ -41,7 +41,33 @@
             <p id="login-error" class="alerta alerta--error" role="alert" hidden></p>
 
             <button type="submit" class="boton boton--primario boton--amplio">Ingresar</button>
-        </form>
+        </div>
+
+        <section class="accesos-login" aria-labelledby="titulo-login-principal">
+            <div class="emblema emblema--login" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3z"/></svg>
+            </div>
+            <h1 id="titulo-login-principal" class="titulo-login">Intranet Escolar</h1>
+            <p class="subtitulo">Escuela N.º 12 · Comunidad educativa</p>
+            <div class="login-doble">
+                <form class="tarjeta tarjeta--login" data-form-login="docente" novalidate>
+                    <h2>Docentes / Personal</h2>
+                    <p class="subtitulo">Acceso al panel académico.</p>
+                    <div class="campo"><label for="login-docente-usuario">Usuario</label><input type="text" id="login-docente-usuario" name="usuario" autocomplete="username" required></div>
+                    <div class="campo"><label for="login-docente-clave">Contraseña</label><input type="password" id="login-docente-clave" name="clave" autocomplete="current-password" required></div>
+                    <p class="login-error alerta alerta--error" role="alert" hidden></p>
+                    <button type="submit" class="boton boton--primario boton--amplio">Ingresar como docente</button>
+                </form>
+                <form class="tarjeta tarjeta--login" data-form-login="estudiante" novalidate>
+                    <h2>Estudiantes / Familias</h2>
+                    <p class="subtitulo">Consulta notas, horario y tareas.</p>
+                    <div class="campo"><label for="login-estudiante-usuario">Usuario</label><input type="text" id="login-estudiante-usuario" name="usuario" autocomplete="username" required></div>
+                    <div class="campo"><label for="login-estudiante-clave">Contraseña</label><input type="password" id="login-estudiante-clave" name="clave" autocomplete="current-password" required></div>
+                    <p class="login-error alerta alerta--error" role="alert" hidden></p>
+                    <button type="submit" class="boton boton--primario boton--amplio">Ingresar como estudiante</button>
+                </form>
+            </div>
+        </section>
     </div>
 
     <!-- ======== Aplicación ======== -->

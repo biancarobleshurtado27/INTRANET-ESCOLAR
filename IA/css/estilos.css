@@ -156,7 +156,9 @@ a {
     display: grid;
     place-items: center;
     padding: var(--espaciado);
-    background: linear-gradient(160deg, #154360 0%, #1a5276 45%, #2471a3 100%);
+    background:
+        radial-gradient(circle at var(--cursor-x, 50%) var(--cursor-y, 50%), rgba(255, 255, 255, 0.20), transparent 22rem),
+        linear-gradient(160deg, #154360 0%, #1a5276 45%, #2471a3 100%);
     background-size: 220% 220%;
     animation: fondoGradiente 20s ease infinite;
     overflow: hidden;
@@ -180,6 +182,41 @@ a {
     border-radius: var(--radio-suave);
     box-shadow: var(--sombra-fuerte);
     animation: aparecer 0.5s ease both;
+}
+
+.accesos-login {
+    position: relative;
+    z-index: 1;
+    width: min(100%, 58rem);
+    padding: 1.5rem;
+    border-radius: var(--radio-suave);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(8px);
+}
+
+.accesos-login > .titulo-login,
+.accesos-login > .subtitulo {
+    color: #ffffff;
+}
+
+.accesos-login > .subtitulo {
+    margin-bottom: 1.4rem;
+}
+
+.login-doble {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.login-doble .tarjeta--login {
+    max-width: none;
+    margin: 0;
+}
+
+.login-doble h2 {
+    color: var(--color-primario);
+    text-align: center;
 }
 
 .emblema--login {
@@ -850,6 +887,10 @@ td.acciones .boton {
     .tarjeta--login {
         padding: 1.5rem 1.2rem 1.2rem;
     }
+
+    .accesos-login { padding: 1rem 0.75rem; }
+
+    .login-doble { grid-template-columns: 1fr; }
 
     .selector-rol { grid-template-columns: 1fr; }
 
