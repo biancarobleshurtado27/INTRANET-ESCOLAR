@@ -95,10 +95,28 @@
             ${lista}`;
     }
 
-    function vistaPersonas() {
-        const personas = Store.obtener('personas')
-            .slice()
-            .sort((a, b) => a.nombre.localeCompare(b.nombre));
+    const ORDEN_ROLES = { administracion: 0, docente: 1, estudiante: 2 };
+
+    function vistaCuentas(orden = 'nombre') {
+        const personas = Store.obtener('personas').slice();
+
+        const claveCurso = (persona) => {
+            if (persona.cursoId) return cursoNombre(persona.cursoId);
+            if (persona.materiaId) return materiaNombre(persona.materiaId);
+            return '—';
+        };
+
+        personas.sort((a, b) => {
+            if (orden === 'rol') {
+                const porRol = (ORDEN_ROLES[a.rol] ?? 99) - (ORDEN_ROLES[b.rol] ?? 99);
+                return porRol || a.nombre.localeCompare(b.nombre, 'es');
+            }
+            if (orden === 'curso') {
+                const porCurso = claveCurso(a).localeCompare(claveCurso(b), 'es');
+                return porCurso || a.nombre.localeCompare(b.nombre, 'es');
+            }
+            return a.nombre.localeCompare(b.nombre, 'es');
+        });
 
         const opcionesCurso = Store.obtener('cursos')
             .map((curso) => `<option value="${curso.id}">${U.escaparHTML(curso.nombre)}</option>`)
@@ -113,7 +131,7 @@
                 <td>${U.escaparHTML(persona.nombre)}</td>
                 <td><span class="insignia">${ROLES[persona.rol]}</span></td>
                 <td>${U.escaparHTML(persona.usuario)}</td>
-                <td>${persona.cursoId ? cursoNombre(persona.cursoId) : (persona.materiaId ? materiaNombre(persona.materiaId) : '—')}</td>
+                <td>${claveCurso(persona)}</td>
                 <td class="acciones">
                     <button type="button" class="boton boton--pequeno" data-accion="persona-editar" data-id="${persona.id}">Editar</button>
                     <button type="button" class="boton boton--pequeno boton--peligro" data-accion="persona-eliminar" data-id="${persona.id}">Eliminar</button>
@@ -121,10 +139,11 @@
             </tr>`).join('');
 
         return `
-            <h2>Gestión de personas</h2>
+            <h2>Gestión de cuentas</h2>
+            <p class="comunicado__fecha">Las cuentas creadas permiten el acceso al sistema según su rol. Las cuentas de demostración ya no se muestran en el login.</p>
 
             <section class="tarjeta tarjeta--estrecha" aria-labelledby="titulo-form-persona">
-                <h3 id="titulo-form-persona">Nueva persona</h3>
+                <h3 id="titulo-form-persona">Nueva cuenta</h3>
                 <form data-form="persona" novalidate>
                     <input type="hidden" name="id">
                     <div class="campo">
@@ -156,17 +175,27 @@
                         <select id="persona-materia" name="materiaId">${opcionesMateria}</select>
                     </div>
                     <div class="form-acciones">
-                        <button type="submit" class="boton boton--primario">Guardar persona</button>
+                        <button type="submit" class="boton boton--primario">Guardar cuenta</button>
                         <button type="button" class="boton" data-accion="persona-cancelar" hidden>Cancelar edición</button>
                     </div>
                 </form>
             </section>
 
             <section class="tarjeta" aria-labelledby="titulo-tabla-personas">
-                <h3 id="titulo-tabla-personas">Listado de personas</h3>
+                <div class="tabla-cabecera">
+                    <h3 id="titulo-tabla-personas">Listado de cuentas</h3>
+                    <div class="campo campo--compacto">
+                        <label for="cuentas-orden">Ordenar por</label>
+                        <select id="cuentas-orden">
+                            <option value="nombre" ${orden === 'nombre' ? 'selected' : ''}>Nombre (A–Z)</option>
+                            <option value="rol" ${orden === 'rol' ? 'selected' : ''}>Rol</option>
+                            <option value="curso" ${orden === 'curso' ? 'selected' : ''}>Curso / Materia</option>
+                        </select>
+                    </div>
+                </div>
                 <div class="tabla-contenedor">
                     <table>
-                        <caption>Personas registradas en el sistema</caption>
+                        <caption>Cuentas de acceso al sistema</caption>
                         <thead>
                             <tr><th>Nombre</th><th>Rol</th><th>Usuario</th><th>Curso / Materia</th><th>Acciones</th></tr>
                         </thead>
@@ -481,7 +510,7 @@
     window.IntranetEscolar.Vistas = {
         ROLES,
         vistaTablon,
-        vistaPersonas,
+        vistaCuentas,
         vistaComunicados,
         vistaCalificaciones,
         vistaAsistencia,

@@ -7,8 +7,8 @@
     --color-primario: #1a5276;
     --color-primario-oscuro: #154360;
     --color-primario-claro: #2471a3;
-    --color-acento: #f39c12;
-    --color-acento-oscuro: #b9770e;
+    --color-acento: #d81b60;
+    --color-acento-oscuro: #ad1457;
     --color-fondo: #f4f6f7;
     --color-tarjeta: #ffffff;
     --color-texto: #1c2833;
@@ -213,12 +213,6 @@ a {
     font-size: 0.9rem;
 }
 
-.lista-ayuda {
-    margin: 0.5rem 0 0;
-    padding-left: 1.25rem;
-    font-size: 0.9rem;
-}
-
 /* ------------------------------------------------------------
    Cabecera y navegación
    ------------------------------------------------------------ */
@@ -392,6 +386,26 @@ a {
 
 .tarjeta--estrecha {
     max-width: 46rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tabla-cabecera {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.tabla-cabecera h3 {
+    margin: 0;
+}
+
+.campo--compacto {
+    max-width: 14rem;
+    margin: 0;
 }
 
 .campo {

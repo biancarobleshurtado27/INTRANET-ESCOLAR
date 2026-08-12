@@ -124,7 +124,7 @@ Cada función devuelve un string HTML (con valores escapados) para `#contenido`:
 | Vista            | Rol           | Descripción                                        |
 |------------------|---------------|----------------------------------------------------|
 | `vistaTablon`    | todos         | Comunicados con filtro por destinatario            |
-| `vistaPersonas`  | administración| CRUD de personas                                   |
+| `vistaCuentas`   | administración| CRUD de cuentas, ordenable por nombre, rol o curso |
 | `vistaComunicados` | administración | Publicar/editar/eliminar comunicados             |
 | `vistaCalificaciones` | docente  | Notas por materia y periodo                        |
 | `vistaAsistencia` | docente      | Asistencia por curso y fecha                       |
@@ -165,7 +165,7 @@ Cada función devuelve un string HTML (con valores escapados) para `#contenido`:
   **Grid** (cabecera) y **Flexbox** (menú, formularios, acciones), y breakpoints
   `@media` a 860 px y 480 px.
 - Paleta con contraste AA (azul `#1a5276` sobre blanco, texto `#1c2833` sobre `#f4f6f7`,
-  ámbar `#f39c12` como acento escolar).
+  rosa `#d81b60` como acento escolar).
 - Fondo dinámico: gradiente animado (`fondoGradiente`) y formas flotantes (`flotar`).
 - Foco visible con `:focus-visible` y estados de error/éxito con clases dedicadas.
 - `prefers-reduced-motion` desactiva todas las animaciones para accesibilidad.

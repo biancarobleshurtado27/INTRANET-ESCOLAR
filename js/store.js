@@ -70,7 +70,8 @@
             rol: 'estudiante',
             usuario: slugificarUsuario(nombre),
             clave: U.codificarClave('1234'),
-            cursoId
+            cursoId,
+            creadoEn: U.fechaDesdeHoy(-Math.floor(Math.random() * 45))
         }));
 
         const personas = [
@@ -79,7 +80,8 @@
                 nombre: 'Carolina Díaz',
                 rol: 'administracion',
                 usuario: 'admin',
-                clave: U.codificarClave('admin123')
+                clave: U.codificarClave('admin123'),
+                creadoEn: U.fechaDesdeHoy(-60)
             },
             {
                 id: U.generarId('persona'),
@@ -88,7 +90,8 @@
                 usuario: 'laura.perez',
                 clave: U.codificarClave('1234'),
                 materiaId: materias[0].id,
-                cursoId: cursos[1].id
+                cursoId: cursos[1].id,
+                creadoEn: U.fechaDesdeHoy(-55)
             },
             {
                 id: U.generarId('persona'),
@@ -97,7 +100,8 @@
                 usuario: 'martin.gomez',
                 clave: U.codificarClave('1234'),
                 materiaId: materias[1].id,
-                cursoId: cursos[0].id
+                cursoId: cursos[0].id,
+                creadoEn: U.fechaDesdeHoy(-50)
             },
             ...estudiantes
         ];

@@ -21,12 +21,15 @@
 
 #### Administración
 
-- [ ] Alta de personas (nombre, rol, usuario, contraseña; curso o materia según rol).
-- [ ] Baja de personas con confirmación previa.
-- [ ] Edición de personas (los datos se precargan en el formulario).
+- [ ] Alta de cuentas (nombre, rol, usuario, contraseña; curso o materia según rol).
+- [ ] Baja de cuentas con confirmación previa.
+- [ ] Edición de cuentas (los datos se precargan en el formulario).
+- [ ] Listado de cuentas con su información (rol, usuario, curso/materia), ordenable por
+      nombre, rol o curso.
 - [ ] Publicación de comunicados (título, contenido, destinatario).
 - [ ] Edición y eliminación de comunicados publicados.
 - [ ] Validación de usuario duplicado al dar de alta o editar.
+- [ ] El login no muestra cuentas de demostración.
 
 #### Docente
 

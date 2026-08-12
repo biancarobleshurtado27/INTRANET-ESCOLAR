@@ -9,7 +9,7 @@
     const MENU = {
         administracion: [
             { vista: 'tablon', etiqueta: 'Tablón' },
-            { vista: 'personas', etiqueta: 'Personas' },
+            { vista: 'cuentas', etiqueta: 'Cuentas' },
             { vista: 'comunicados', etiqueta: 'Comunicados' }
         ],
         docente: [
@@ -29,6 +29,7 @@
     const estado = {
         vistaActual: 'tablon',
         filtroTablon: 'todos',
+        ordenCuentas: 'nombre',
         periodoCalificaciones: 2,
         fechaAsistencia: null
     };
@@ -98,17 +99,6 @@
         alerta.textContent = mensaje;
     }
 
-    function construirLoginAyuda() {
-        const personas = Store.obtener('personas');
-        const lista = document.getElementById('lista-ayuda');
-        lista.innerHTML = personas.map((persona) => `
-            <li>
-                <strong>${U.escaparHTML(persona.usuario)}</strong>
-                (${Vistas.ROLES[persona.rol]}) — clave
-                ${persona.rol === 'administracion' ? 'admin123' : '1234'}
-            </li>`).join('');
-    }
-
     function mostrarLogin() {
         Auth.cerrarSesion();
         elApp.hidden = true;
@@ -156,7 +146,7 @@
 
         const renderizador = {
             tablon: () => Vistas.vistaTablon(estado.filtroTablon),
-            personas: Vistas.vistaPersonas,
+            cuentas: () => Vistas.vistaCuentas(estado.ordenCuentas),
             comunicados: Vistas.vistaComunicados,
             calificaciones: () => Vistas.vistaCalificaciones(estado.periodoCalificaciones),
             asistencia: () => Vistas.vistaAsistencia(estado.fechaAsistencia),
@@ -202,7 +192,7 @@
         form.querySelector('[data-accion="persona-cancelar"]').hidden = false;
 
         const titulo = document.getElementById('titulo-form-persona');
-        if (titulo) titulo.textContent = 'Editar persona';
+        if (titulo) titulo.textContent = 'Editar cuenta';
 
         alternarCamposCondicionales(persona.rol);
         form.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -223,7 +213,7 @@
             return;
         }
         if (!esEdicion && !clave) {
-            mostrarErrorForm(form, 'La contraseña es obligatoria para nuevas personas.');
+            mostrarErrorForm(form, 'La contraseña es obligatoria para nuevas cuentas.');
             return;
         }
         if (clave && clave.length < 4) {
@@ -233,7 +223,7 @@
         const duplicado = Store.filtrar('personas',
             (p) => U.normalizarTexto(p.usuario) === U.normalizarTexto(usuario) && p.id !== id)[0];
         if (duplicado) {
-            mostrarErrorForm(form, 'Ya existe una persona registrada con ese usuario.');
+            mostrarErrorForm(form, 'Ya existe una cuenta registrada con ese usuario.');
             return;
         }
 
@@ -256,7 +246,7 @@
         if (esEdicion) {
             resultado = Store.actualizar('personas', id, datos);
         } else {
-            resultado = Boolean(Store.insertar('personas', datos));
+            resultado = Boolean(Store.insertar('personas', { ...datos, creadoEn: U.hoyISO() }));
         }
 
         if (!resultado) {
@@ -264,8 +254,8 @@
             return;
         }
 
-        notificar(esEdicion ? 'Persona actualizada.' : 'Persona registrada.');
-        cambiarVista('personas');
+        notificar(esEdicion ? 'Cuenta actualizada.' : 'Cuenta registrada.');
+        cambiarVista('cuentas');
     }
 
     function eliminarPersona(id) {
@@ -274,8 +264,8 @@
         if (!window.confirm(`¿Eliminar a ${persona.nombre}? Esta acción no se puede deshacer.`)) return;
 
         const eliminada = Store.eliminar('personas', id);
-        notificar(eliminada ? 'Persona eliminada.' : 'No se pudo eliminar (almacenamiento lleno).', !eliminada);
-        cambiarVista('personas');
+        notificar(eliminada ? 'Cuenta eliminada.' : 'No se pudo eliminar (almacenamiento lleno).', !eliminada);
+        cambiarVista('cuentas');
     }
 
     /* ------------------------------------------------------------
@@ -352,7 +342,7 @@
             form.querySelector('[name="clave"]').required = true;
             alternarCamposCondicionales('administracion');
             const titulo = document.getElementById('titulo-form-persona');
-            if (titulo) titulo.textContent = 'Nueva persona';
+            if (titulo) titulo.textContent = 'Nueva cuenta';
         } else {
             const titulo = document.getElementById('titulo-form-comunicado');
             if (titulo) titulo.textContent = 'Nuevo comunicado';
@@ -523,6 +513,11 @@
             alternarCamposCondicionales(evento.target.value);
             return;
         }
+        if (evento.target.matches('#cuentas-orden')) {
+            estado.ordenCuentas = evento.target.value;
+            cambiarVista('cuentas');
+            return;
+        }
         if (evento.target.matches('#calificaciones-periodo')) {
             estado.periodoCalificaciones = Number(evento.target.value);
             cambiarVista('calificaciones');
@@ -545,7 +540,6 @@
 
     function iniciar() {
         Store.cargar();
-        construirLoginAyuda();
 
         crearFondoDinamico(document.querySelector('#vista-login .fondo-dinamico'), 10);
         crearFondoDinamico(document.querySelector('#vista-app .fondo-dinamico'), 12);

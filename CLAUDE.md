@@ -115,6 +115,8 @@ Estas reglas son de **cumplimiento obligatorio** para todo trabajo en este repos
 - **2026-08-12 — Proyecto inicializado.** Repo con `index.html` base y `README.md`. Ramas `main` y `bianca`.
 - **2026-08-12 — Aplicación construida (v0.1.0).** SPA con roles, persistencia en `localStorage` y documentación completa. Ver `CHANGELOG.md`.
 - **2026-08-12 — Rediseño escolar y fondo dinámico (v0.2.0).** Gradiente animado, formas flotantes SVG generadas por JS (`crearFondoDinamico` en `app.js`), cabecera con emblema, saludo y fecha dinámicos. Respeto de `prefers-reduced-motion`. Ver `CHANGELOG.md`.
+- **2026-08-12 — Acento rosa y apartado "Cuentas" (v0.3.0).** El acento anaranjado pasa a rosa (`#d81b60`); el login ya no muestra cuentas demo y administración gestiona las cuentas (crear/modificar/eliminar) con fecha de alta `creadoEn`. Ver `CHANGELOG.md`.
+- **2026-08-12 — Orden en cuentas y centrado (v0.3.1).** Listado de cuentas ordenable por nombre/rol/curso; se quita la columna "Alta"; formularios de cuentas y comunicados centrados. Ver `CHANGELOG.md`.
 - **Persistencia con `localStorage`:** se eligió sobre JSON vía `fetch` porque permite escritura (alta/baja/edición) sin servidor, cumpliendo el requisito de simular backend.
 - **Un solo punto de acceso a datos:** módulo `store.js` como única puerta a `localStorage`. Ver regla 6.
 - **Sin módulos ES (`import`/`export`):** el proyecto se abre por `file://` y Chrome bloquea los módulos ES en ese contexto; se usan scripts cargados en orden que exponen `window.IntranetEscolar`.

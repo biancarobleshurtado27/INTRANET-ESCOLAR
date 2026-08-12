@@ -32,12 +32,13 @@ También se puede servir con cualquier servidor estático si se prefiere (ej.
 | Docente (Lengua)       | `martin.gomez`  | `1234`     |
 | Estudiante (2° A)      | `sofia.martinez`| `1234`     |
 
-La pantalla de login muestra la lista completa de cuentas de demostración.
+Estas cuentas son solo para pruebas y **no aparecen en el login**: la administración
+gestiona las cuentas desde el apartado **Cuentas** (crear, modificar y eliminar).
 
 ## Qué se puede hacer
 
-- **Administración:** alta, baja y edición de personas; publicación, edición y
-  eliminación de comunicados en el tablón.
+- **Administración:** gestión de cuentas (alta, baja y edición con su información) y
+  publicación, edición y eliminación de comunicados en el tablón.
 - **Docente:** registro y consulta de calificaciones por materia y periodo, registro de
   asistencia por curso y consulta de aulas y horarios.
 - **Estudiante / Familia:** consulta de notas (con promedio), horario semanal, tareas y

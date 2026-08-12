@@ -3,6 +3,33 @@
 Registro estructurado de versiones y cambios del proyecto **Intranet Escolar**.
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/).
 
+## [0.3.1] — 2026-08-12
+
+### Agregado
+
+- Selector **"Ordenar por"** en el listado de cuentas: por nombre (A–Z), por rol o por
+  curso/materia (con nombre alfabético como segundo criterio).
+
+### Cambiado
+
+- Se elimina la columna **"Alta"** del listado de cuentas.
+- Los formularios "Gestión de cuentas" y "Publicar comunicados" se centran en la página.
+
+## [0.3.0] — 2026-08-12
+
+### Cambiado
+
+- **Color de acento:** el ámbar anaranjado se reemplaza por rosa (`#d81b60`).
+- **Login sin cuentas de demostración:** se elimina el desplegable que mostraba las
+  cuentas demo; las credenciales se gestionan desde administración.
+
+### Agregado
+
+- **Apartado "Cuentas" en administración** (reemplaza a "Personas"): muestra el listado
+  de cuentas creadas con su información (nombre, rol, usuario, curso/materia y fecha de
+  alta), con formulario para crear, modificar o eliminar una cuenta.
+- Campo `creadoEn` (fecha de alta) en las cuentas, registrado al crearlas.
+
 ## [0.2.0] — 2026-08-12
 
 ### Agregado
