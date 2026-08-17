@@ -11,7 +11,11 @@
             { vista: 'tablon', etiqueta: 'Tablón' },
             { vista: 'calificaciones', etiqueta: 'Calificaciones' },
             { vista: 'asistencia', etiqueta: 'Asistencia' },
-            { vista: 'aulas', etiqueta: 'Aulas y horarios' }
+            { vista: 'aulas', etiqueta: 'Aulas y horarios' },
+            { vista: 'usuarios', etiqueta: 'Usuarios' },
+            { vista: 'calendario', etiqueta: 'Calendario' },
+            { vista: 'materias', etiqueta: 'Materias' },
+            { vista: 'tareas-docente', etiqueta: 'Tareas' }
         ],
         estudiante: [
             { vista: 'tablon', etiqueta: 'Tablón' },
@@ -25,7 +29,11 @@
         vistaActual: 'tablon',
         filtroTablon: 'todos',
         periodoCalificaciones: 2,
-        fechaAsistencia: null
+        fechaAsistencia: null,
+        ordenUsuarios: 'rol',
+        filtroRolUsuarios: 'todos',
+        filtroCursoUsuarios: 'todos',
+        busquedaUsuarios: ''
     };
 
     const elLogin = document.getElementById('vista-login');
@@ -62,12 +70,16 @@
         const ahora = new Date();
         const hora = ahora.getHours();
         const saludo = hora < 12 ? 'Buenos días' : (hora < 19 ? 'Buenas tardes' : 'Buenas noches');
-        document.getElementById('cabecera-saludo').textContent = saludo;
-        document.getElementById('cabecera-fecha').textContent = ahora.toLocaleDateString('es-AR', {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long'
-        });
+        const elSaludo = document.getElementById('cabecera-saludo');
+        const elFecha = document.getElementById('cabecera-fecha');
+        if (elSaludo) elSaludo.textContent = saludo;
+        if (elFecha) {
+            elFecha.textContent = ahora.toLocaleDateString('es-AR', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'long'
+            });
+        }
     }
 
     let temporizadorEstado = null;
@@ -130,6 +142,15 @@
             calificaciones: () => Vistas.vistaCalificaciones(estado.periodoCalificaciones),
             asistencia: () => Vistas.vistaAsistencia(estado.fechaAsistencia),
             aulas: Vistas.vistaAulas,
+            usuarios: () => Vistas.vistaUsuarios(
+                estado.ordenUsuarios,
+                estado.filtroRolUsuarios,
+                estado.filtroCursoUsuarios,
+                estado.busquedaUsuarios
+            ),
+            calendario: Vistas.vistaCalendario,
+            materias: Vistas.vistaMaterias,
+            'tareas-docente': Vistas.vistaTareasDocente,
             notas: Vistas.vistaNotas,
             horarios: Vistas.vistaHorarios,
             tareas: Vistas.vistaTareas
@@ -232,6 +253,126 @@
         cambiarVista('asistencia');
     }
 
+    function guardarUsuario(form) {
+        const personaActual = Auth.personaActual();
+        if (!personaActual || personaActual.rol !== 'docente') return;
+        const datos = new FormData(form);
+        const id = String(datos.get('id') || '');
+        const nombre = String(datos.get('nombre') || '').trim();
+        const usuario = String(datos.get('usuario') || '').trim();
+        const cursoId = String(datos.get('cursoId') || '');
+        const clave = String(datos.get('clave') || '');
+        const persona = Store.buscar('personas', id);
+
+        if (!persona || !nombre || !usuario) {
+            mostrarErrorForm(form, 'Nombre y usuario son obligatorios.');
+            return;
+        }
+        const duplicado = Store.filtrar('personas', (p) => p.id !== id && U.normalizarTexto(p.usuario) === U.normalizarTexto(usuario))[0];
+        if (duplicado) {
+            mostrarErrorForm(form, 'Ese usuario ya está en uso.');
+            return;
+        }
+        if (clave && clave.length < 4) {
+            mostrarErrorForm(form, 'La contraseña debe tener al menos 4 caracteres.');
+            return;
+        }
+        const cambios = { nombre, usuario, cursoId: cursoId || null };
+        if (clave) cambios.clave = U.codificarClave(clave);
+        if (!Store.actualizar('personas', id, cambios)) {
+            mostrarErrorForm(form, 'No se pudo guardar el cambio.');
+            return;
+        }
+        notificar('Usuario actualizado.');
+        cambiarVista('usuarios');
+    }
+
+    function guardarNuevoUsuario(form) {
+        const personaActual = Auth.personaActual();
+        if (!personaActual || personaActual.rol !== 'docente') return;
+        const datos = new FormData(form);
+        const nombre = String(datos.get('nombre') || '').trim();
+        const usuario = String(datos.get('usuario') || '').trim();
+        const rol = String(datos.get('rol') || 'estudiante');
+        const cursoId = String(datos.get('cursoId') || '');
+        const clave = String(datos.get('clave') || '').trim();
+
+        if (!nombre || !usuario || !clave) {
+            mostrarErrorForm(form, 'Por favor completa todos los campos obligatorios.');
+            return;
+        }
+
+        if (clave.length < 4) {
+            mostrarErrorForm(form, 'La contraseña debe tener al menos 4 caracteres.');
+            return;
+        }
+
+        const duplicado = Store.filtrar('personas', (p) => U.normalizarTexto(p.usuario) === U.normalizarTexto(usuario))[0];
+        if (duplicado) {
+            mostrarErrorForm(form, 'El nombre de usuario ya existe. Elige otro.');
+            return;
+        }
+
+        const nuevo = Store.insertar('personas', {
+            nombre,
+            usuario,
+            rol,
+            clave: U.codificarClave(clave),
+            cursoId: cursoId || null,
+            creadoEn: U.fechaDesdeHoy(0)
+        });
+
+        if (!nuevo) {
+            mostrarErrorForm(form, 'No se pudo guardar el usuario.');
+            return;
+        }
+
+        notificar(`Usuario "${nombre}" (@${usuario}) creado correctamente.`);
+        cambiarVista('usuarios');
+    }
+
+    function eliminarUsuario(id) {
+        const personaActual = Auth.personaActual();
+        if (!personaActual || personaActual.rol !== 'docente') return;
+        const personaAEliminar = Store.buscar('personas', id);
+        if (!personaAEliminar) return;
+
+        if (!confirm(`¿Estás seguro de que deseas eliminar al usuario "${personaAEliminar.nombre}" (@${personaAEliminar.usuario})?`)) {
+            return;
+        }
+
+        const esMismoUsuario = personaActual.id === id;
+        Store.eliminar('personas', id);
+
+        if (esMismoUsuario) {
+            Auth.cerrarSesion();
+            mostrarLogin();
+            return;
+        }
+
+        notificar(`Usuario "${personaAEliminar.nombre}" eliminado.`);
+        cambiarVista('usuarios');
+    }
+
+    function guardarEvento(form) {
+        const datos = new FormData(form);
+        const titulo = String(datos.get('titulo') || '').trim();
+        const fecha = String(datos.get('fecha') || '');
+        const categoria = String(datos.get('categoria') || 'evento');
+        const descripcion = String(datos.get('descripcion') || '').trim();
+
+        if (!titulo || !fecha) {
+            mostrarErrorForm(form, 'Indique el título y la fecha de la actividad.');
+            return;
+        }
+        if (!Store.insertar('eventos', { titulo, fecha, categoria, descripcion })) {
+            mostrarErrorForm(form, 'No se pudo guardar el evento.');
+            return;
+        }
+        notificar(`Actividad "${titulo}" agregada al calendario.`);
+        cambiarVista('calendario');
+    }
+
     /* ------------------------------------------------------------
        Eventos
        ------------------------------------------------------------ */
@@ -256,11 +397,37 @@
         });
     });
 
-    document.getElementById('boton-salir').addEventListener('click', () => {
-        Auth.cerrarSesion();
-        history.replaceState(null, '', window.location.pathname);
-        mostrarLogin();
-    });
+    const botonSalir = document.getElementById('boton-salir');
+    if (botonSalir) {
+        botonSalir.addEventListener('click', () => {
+            Auth.cerrarSesion();
+            history.replaceState(null, '', window.location.pathname);
+            mostrarLogin();
+        });
+    }
+
+    const botonSalirLateral = document.getElementById('boton-salir-lateral');
+    if (botonSalirLateral) {
+        botonSalirLateral.addEventListener('click', () => {
+            Auth.cerrarSesion();
+            history.replaceState(null, '', window.location.pathname);
+            mostrarLogin();
+        });
+    }
+
+    const interruptorTema = document.getElementById('interruptor-tema');
+    if (interruptorTema) {
+        interruptorTema.addEventListener('click', () => {
+            const oscuro = document.body.classList.toggle('tema-oscuro');
+            interruptorTema.setAttribute('aria-pressed', String(oscuro));
+            interruptorTema.textContent = oscuro ? 'Modo claro' : 'Modo oscuro';
+            try {
+                localStorage.setItem('intranet_tema', oscuro ? 'oscuro' : 'claro');
+            } catch (e) {
+                // Ignorar errores de localStorage deshabilitado
+            }
+        });
+    }
 
     contenido.addEventListener('click', (evento) => {
         const boton = evento.target.closest('[data-accion]');
@@ -271,6 +438,24 @@
                 estado.filtroTablon = boton.dataset.filtro;
                 cambiarVista('tablon');
                 break;
+            case 'eliminar-usuario': {
+                const id = boton.dataset.id;
+                eliminarUsuario(id);
+                break;
+            }
+            case 'evento-eliminar':
+            case 'eliminar-actividad': {
+                const id = boton.dataset.id;
+                const tipo = boton.dataset.tipo;
+                if (tipo === 'tarea') {
+                    Store.eliminar('tareas', id);
+                } else {
+                    Store.eliminar('eventos', id);
+                }
+                notificar('Actividad eliminada.');
+                cambiarVista('calendario');
+                break;
+            }
         }
     });
 
@@ -286,6 +471,15 @@
             case 'asistencia':
                 guardarAsistencia(form);
                 break;
+            case 'usuario':
+                guardarUsuario(form);
+                break;
+            case 'nuevo-usuario':
+                guardarNuevoUsuario(form);
+                break;
+            case 'evento':
+                guardarEvento(form);
+                break;
         }
     });
 
@@ -298,6 +492,30 @@
         if (evento.target.matches('#asistencia-fecha')) {
             estado.fechaAsistencia = evento.target.value;
             cambiarVista('asistencia');
+        }
+        if (evento.target.matches('#usuarios-orden')) {
+            estado.ordenUsuarios = evento.target.value;
+            cambiarVista('usuarios');
+        }
+        if (evento.target.matches('#usuarios-filtro-rol')) {
+            estado.filtroRolUsuarios = evento.target.value;
+            cambiarVista('usuarios');
+        }
+        if (evento.target.matches('#usuarios-filtro-curso')) {
+            estado.filtroCursoUsuarios = evento.target.value;
+            cambiarVista('usuarios');
+        }
+    });
+
+    contenido.addEventListener('input', (evento) => {
+        if (evento.target.matches('#usuarios-busqueda')) {
+            estado.busquedaUsuarios = evento.target.value;
+            cambiarVista('usuarios');
+            const input = document.getElementById('usuarios-busqueda');
+            if (input) {
+                input.focus();
+                input.setSelectionRange(input.value.length, input.value.length);
+            }
         }
     });
 
@@ -312,6 +530,15 @@
 
     function iniciar() {
         Store.cargar();
+        try {
+            if (localStorage.getItem('intranet_tema') === 'oscuro') {
+                document.body.classList.add('tema-oscuro');
+                document.getElementById('interruptor-tema').setAttribute('aria-pressed', 'true');
+                document.getElementById('interruptor-tema').textContent = 'Modo claro';
+            }
+        } catch (e) {
+            // Ignorar si localStorage está bloqueado o deshabilitado
+        }
 
         crearFondoDinamico(document.querySelector('#vista-login .fondo-dinamico'), 10);
         crearFondoDinamico(document.querySelector('#vista-app .fondo-dinamico'), 12);

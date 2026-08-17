@@ -12,7 +12,8 @@
         'calificaciones',
         'asistencias',
         'horarios',
-        'tareas'
+        'tareas',
+        'eventos'
     ];
 
     const datos = {
@@ -23,7 +24,8 @@
         calificaciones: [],
         asistencias: [],
         horarios: [],
-        tareas: []
+        tareas: [],
+        eventos: []
     };
 
     function guardar() {
@@ -75,6 +77,25 @@
         }));
 
         const personas = [
+            {
+                id: U.generarId('persona'),
+                nombre: 'Administrador Docente',
+                rol: 'docente',
+                usuario: 'admin',
+                clave: U.codificarClave('1234'),
+                materiaId: materias[0].id,
+                cursoId: cursos[1].id,
+                creadoEn: U.fechaDesdeHoy(-60)
+            },
+            {
+                id: U.generarId('persona'),
+                nombre: 'Bianca Robles',
+                rol: 'estudiante',
+                usuario: 'bianca',
+                clave: U.codificarClave('1234'),
+                cursoId: cursos[1].id,
+                creadoEn: U.fechaDesdeHoy(-45)
+            },
             {
                 id: U.generarId('persona'),
                 nombre: 'Laura Pérez',
@@ -212,6 +233,7 @@
         datos.asistencias = asistencias;
         datos.horarios = horarios;
         datos.tareas = tareas;
+        datos.eventos = [];
 
         guardar();
     }
@@ -229,6 +251,34 @@
                 datos[entidad] = Array.isArray(almacenado[entidad]) ? almacenado[entidad] : [];
             });
             datos.personas = datos.personas.filter((persona) => persona.rol === 'docente' || persona.rol === 'estudiante');
+            
+            const tieneAdmin = datos.personas.some((p) => U.normalizarTexto(p.usuario) === 'admin');
+            if (!tieneAdmin) {
+                datos.personas.unshift({
+                    id: U.generarId('persona'),
+                    nombre: 'Administrador Docente',
+                    rol: 'docente',
+                    usuario: 'admin',
+                    clave: U.codificarClave('1234'),
+                    materiaId: (datos.materias[0] && datos.materias[0].id) || null,
+                    cursoId: (datos.cursos[1] && datos.cursos[1].id) || null,
+                    creadoEn: U.fechaDesdeHoy(-60)
+                });
+            }
+
+            const tieneBianca = datos.personas.some((p) => U.normalizarTexto(p.usuario) === 'bianca');
+            if (!tieneBianca) {
+                datos.personas.push({
+                    id: U.generarId('persona'),
+                    nombre: 'Bianca Robles',
+                    rol: 'estudiante',
+                    usuario: 'bianca',
+                    clave: U.codificarClave('1234'),
+                    cursoId: (datos.cursos[1] && datos.cursos[1].id) || null,
+                    creadoEn: U.fechaDesdeHoy(-45)
+                });
+            }
+
             guardar();
         } else {
             sembrarDatos();

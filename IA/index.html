@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,16 +8,18 @@
     <title>Intranet Escolar</title>
     <link rel="stylesheet" href="css/estilos.css">
 </head>
+
 <body>
 
     <!-- ======== Login ======== -->
-    <div id="vista-login" class="vista-login" hidden>
+    <div id="vista-login" class="vista-login">
         <div class="fondo-dinamico fondo-dinamico--login" aria-hidden="true"></div>
 
         <div id="form-login" hidden>
             <div class="emblema emblema--login" aria-hidden="true">
                 <svg viewBox="0 0 24 24">
-                    <path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3zM7 15.91V13.1L12 15.5l5-2.4v2.81L12 18.3l-5-2.39z"/>
+                    <path fill="currentColor"
+                        d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3zM7 15.91V13.1L12 15.5l5-2.4v2.81L12 18.3l-5-2.39z" />
                 </svg>
             </div>
             <h1 class="titulo-login">Intranet Escolar</h1>
@@ -24,7 +27,8 @@
 
             <div class="selector-rol" role="group" aria-label="Tipo de acceso">
                 <button type="button" class="selector-rol__opcion" data-rol-login="docente">Docentes / Personal</button>
-                <button type="button" class="selector-rol__opcion" data-rol-login="estudiante">Estudiantes / Familias</button>
+                <button type="button" class="selector-rol__opcion" data-rol-login="estudiante">Estudiantes /
+                    Familias</button>
             </div>
             <input type="hidden" id="login-rol" name="rol">
 
@@ -45,24 +49,39 @@
 
         <section class="accesos-login" aria-labelledby="titulo-login-principal">
             <div class="emblema emblema--login" aria-hidden="true">
-                <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3z"/></svg>
+                <svg viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3z" />
+                </svg>
             </div>
             <h1 id="titulo-login-principal" class="titulo-login">Intranet Escolar</h1>
             <p class="subtitulo">Escuela N.º 12 · Comunidad educativa</p>
+            
+            <div class="nota-credenciales-login">
+                <span class="nota-credenciales-login__icono">💡</span>
+                <div class="nota-credenciales-login__contenido">
+                    <p class="nota-credenciales-login__linea"><strong>Docente</strong> &rarr; usuario: <code>admin</code> &nbsp;|&nbsp; password: <code>1234</code></p>
+                    <p class="nota-credenciales-login__linea"><strong>Alumno</strong> &rarr; usuario: <code>bianca</code> &nbsp;|&nbsp; password: <code>1234</code></p>
+                </div>
+            </div>
+
             <div class="login-doble">
                 <form class="tarjeta tarjeta--login" data-form-login="docente" novalidate>
                     <h2>Docentes / Personal</h2>
                     <p class="subtitulo">Acceso al panel académico.</p>
-                    <div class="campo"><label for="login-docente-usuario">Usuario</label><input type="text" id="login-docente-usuario" name="usuario" autocomplete="username" required></div>
-                    <div class="campo"><label for="login-docente-clave">Contraseña</label><input type="password" id="login-docente-clave" name="clave" autocomplete="current-password" required></div>
+                    <div class="campo"><label for="login-docente-usuario">Usuario</label><input type="text"
+                            id="login-docente-usuario" name="usuario" autocomplete="username" required></div>
+                    <div class="campo"><label for="login-docente-clave">Contraseña</label><input type="password"
+                            id="login-docente-clave" name="clave" autocomplete="current-password" required></div>
                     <p class="login-error alerta alerta--error" role="alert" hidden></p>
                     <button type="submit" class="boton boton--primario boton--amplio">Ingresar como docente</button>
                 </form>
                 <form class="tarjeta tarjeta--login" data-form-login="estudiante" novalidate>
                     <h2>Estudiantes / Familias</h2>
                     <p class="subtitulo">Consulta notas, horario y tareas.</p>
-                    <div class="campo"><label for="login-estudiante-usuario">Usuario</label><input type="text" id="login-estudiante-usuario" name="usuario" autocomplete="username" required></div>
-                    <div class="campo"><label for="login-estudiante-clave">Contraseña</label><input type="password" id="login-estudiante-clave" name="clave" autocomplete="current-password" required></div>
+                    <div class="campo"><label for="login-estudiante-usuario">Usuario</label><input type="text"
+                            id="login-estudiante-usuario" name="usuario" autocomplete="username" required></div>
+                    <div class="campo"><label for="login-estudiante-clave">Contraseña</label><input type="password"
+                            id="login-estudiante-clave" name="clave" autocomplete="current-password" required></div>
                     <p class="login-error alerta alerta--error" role="alert" hidden></p>
                     <button type="submit" class="boton boton--primario boton--amplio">Ingresar como estudiante</button>
                 </form>
@@ -78,7 +97,8 @@
             <div class="cabecera__superior">
                 <div class="cabecera__marca">
                     <svg class="cabecera__emblema" viewBox="0 0 24 24" aria-hidden="true">
-                        <path fill="currentColor" d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3zM7 15.91V13.1L12 15.5l5-2.4v2.81L12 18.3l-5-2.39z"/>
+                        <path fill="currentColor"
+                            d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6L21 10.18V15h2V9L12 3zM7 15.91V13.1L12 15.5l5-2.4v2.81L12 18.3l-5-2.39z" />
                     </svg>
                     <div class="cabecera__texto">
                         <p class="cabecera__titulo">Intranet Escolar</p>
@@ -92,7 +112,8 @@
                         <span id="cabecera-fecha" class="cabecera__fecha"></span>
                     </p>
                     <span id="cabecera-nombre" class="cabecera__nombre"></span>
-                    <button id="boton-salir" class="boton boton--secundario boton--en-cabecera" type="button">Salir</button>
+                    <button id="interruptor-tema" class="boton boton--secundario boton--en-cabecera" type="button"
+                        aria-pressed="false">Modo oscuro</button>
                 </div>
             </div>
 
@@ -102,6 +123,7 @@
             <nav class="navegacion" aria-label="Navegación principal">
                 <p class="navegacion__titulo">Panel</p>
                 <ul id="menu" class="menu"></ul>
+                <button id="boton-salir-lateral" class="boton boton--salir-lateral" type="button">Cerrar sesión</button>
             </nav>
             <main id="contenido" class="contenido"></main>
         </div>
@@ -119,4 +141,5 @@
     <script src="js/vistas.js"></script>
     <script src="js/app.js"></script>
 </body>
-</html>
+
+</html>j
